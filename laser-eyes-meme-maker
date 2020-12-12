@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Create Meme Videos & Templates - memed.io</title>
+    <meta name="description" content="Create meme videos easily with our simple meme video editor. You can add text to videos, and images, and white padding to the top if needed. You can even create templates that you can share with others.">
+    <link id="favicon" rel="icon" href="https://cdn.glitch.com/a3cb1903-3df2-470f-9076-c2370808ed39%2FNew%20Project%20(2).png?1536937204653" type="image/png">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script>if(window.location.origin.includes("glitch.me")) window.location.href = "https://memed.io"+window.location.pathname;</script>
+  </head>
+  <body>
+    
+    <style>
+      html {
+        box-sizing: border-box;
+      }
+      *, *:before, *:after {
+        box-sizing: inherit;
+      }
+    </style>
+    
+    <main><script src="https://unpkg.com/@webcomponents/webcomponentsjs@2.0.0/webcomponents-bundle.js"></script>
+<script>
+  document.querySelector('meta[name="description"]').setAttribute("content", `A simple tool to add laser eyes (glowing eyes) effects to any image. Great for creating red laser eyes memes. Lots of lens flare types included - red, blue, etc.`);
+  document.querySelector('title').innerText =  `Laser Eyes Meme Maker (Glowing Eyes) - memed.io`;
+</script>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>  
+
+<div style="width:calc(100% - 2rem); max-width:800px; margin:0 auto; min-height:1.2vh;">
+
+  <h1 style="text-align: center; font-size: 2rem; margin: 2rem 0;"><img style="height: 2rem; vertical-align: text-bottom;" src="https://cdn.glitch.com/a3cb1903-3df2-470f-9076-c2370808ed39%2Fface-with-open-mouth_1f62e.png?1537093403147"> Laser Eyes Meme Maker <img style="height: 2rem; vertical-align: text-bottom;" src="https://cdn.glitch.com/a3cb1903-3df2-470f-9076-c2370808ed39%2Ffire_1f525.png?1537093474712"></h1>
+  
+  <div class="file-field input-field">
+    <div class="btn blue">
+      <span>Image</span>
+      <input id="baseImageInput" type="file">
+    </div>
+    <div class="file-path-wrapper">
+      <input class="file-path validate" type="text" placeholder="Click here, or drag and drop, or paste an image/url onto this page">
+    </div>
+  </div>
+  
+  <div style="display:none;" id="editingAreaDiv">
+    <template>
+
+  <style>
+    #gallery-ctn {
+      display: flex; 
+      flex-wrap: wrap;
+      padding: 0.5rem;
+      justify-content: center;
+    }
+    #gallery-ctn > div {
+      display:inline-block;
+      width:7rem;
+      height:7rem;
+      background-position: center;
+      background-size:cover;
+      cursor:pointer;
+      background-color: #eeeeef;
+      margin: 0.5rem;
+      border-radius: 2px;
+      box-shadow: rgba(0, 0, 0, 0.14) 0px 2px 2px 0px, rgba(0, 0, 0, 0.12) 0px 3px 1px -2px, rgba(0, 0, 0, 0.2) 0px 1px 5px 0px;
+    }
+    #gallery-ctn > div:hover {
+      filter: brightness(1.1);
+    }
+    
+    
+    button {
+      background-color: #2196f3;
+      border:none;
+      border-radius:2px;
+      box-shadow:rgba(0, 0, 0, 0.14) 0px 2px 2px 0px, rgba(0, 0, 0, 0.12) 0px 3px 1px -2px, rgba(0, 0, 0, 0.2) 0px 1px 5px 0px;
+      box-sizing:border-box;
+      color:white;
+      cursor:pointer;
+      display:inline-block;
+      font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+      font-size:13px;
+      font-weight:400;
+      letter-spacing:0.5px;
+      line-height:32.4px;
+      outline:none;
+      padding:0 16px;
+      text-transform:uppercase;
+      transition-delay:0s;
+      transition-duration:0.3s;
+      transition-property:all;
+      transition-timing-function:ease-out;
+      user-select:none;
+      vertical-align:middle;
+      -webkit-font-smoothing:antialiased;
+      -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    }
+    button:hover {
+      background-color: #42a5f5;
+    }
+  </style>
+  
+
+   <!-- CSS SPINNER -->
+  <style>
+    .lds-ring {
+      display: inline-block;
+      position: relative;
+      width: 64px;
+      height: 64px;
+    }
+    .lds-ring div {
+      box-sizing: border-box;
+      display: block;
+      position: absolute;
+      width: 51px;
+      height: 51px;
+      margin: 6px;
+      border: 6px solid #444;
+      border-radius: 50%;
+      animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+      border-color: #444 transparent transparent transparent;
+    }
+    .lds-ring div:nth-child(1) {
+      animation-delay: -0.45s;
+    }
+    .lds-ring div:nth-child(2) {
+      animation-delay: -0.3s;
+    }
+    .lds-ring div:nth-child(3) {
+      animation-delay: -0.15s;
+    }
+    @keyframes lds-ring {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
+    }            
+  </style>
+  
+  
+  <div id="fabric-wrapper">
+    <canvas></canvas>
+  </div>
+  <div>
+    <button style="margin-top:1rem;" onclick="this.getRootNode().host.downloadCanvasAsImage('jpeg')"><span><img style="filter: invert(1); height: 1.3rem; vertical-align: sub; margin-bottom: -1px;" src="https://cdn.glitch.com/a3cb1903-3df2-470f-9076-c2370808ed39%2Fbaseline-cloud_download-24px.svg?1537031806624"></span> <span>download</span></button>
+    <button style="margin-left: 0.7rem; margin-top:1rem;" onclick="this.getRootNode().host.deleteSelectedObject()"><span><img style="filter: invert(1); height: 1.3rem; vertical-align: sub; margin-bottom: -1px;" src="https://cdn.glitch.com/a3cb1903-3df2-470f-9076-c2370808ed39%2Fbaseline-delete_forever-24px.svg?1537038049042"></span> <span>delete selected</span></button>
+    <button title="Move select object down/backwards" style="margin-left: 0.7rem; margin-top:1rem;" onclick="this.getRootNode().host.moveSelectedObjectBackwards()"><span><img style="filter: invert(1); height: 1.3rem; vertical-align: sub; margin-bottom: -1px;" src="https://cdn.glitch.com/a3cb1903-3df2-470f-9076-c2370808ed39%2Fbaseline-arrow_downward-24px.svg?1537092198425"></span></button>
+    <button style="margin-top:1rem;" title="Move select object up/forwards" onclick="this.getRootNode().host.moveSelectedObjectForward()"><span><img style="filter: invert(1); height: 1.3rem; vertical-align: sub; margin-bottom: -1px;" src="https://cdn.glitch.com/a3cb1903-3df2-470f-9076-c2370808ed39%2Fbaseline-arrow_upward-24px.svg?1537092215915"></span></button>
+  </div>
+  <p style="margin-top: 2rem; text-align: center;">Click an image to add it to the canvas:</p>
+  <div id="gallery-ctn"></div>
+  
+  <div id="loadingScreen" style="display:none; position:fixed; top:0; bottom:0; left:0; right:0; background:#00000080; z-index:5;">
+    <div class="spinner" style="width:100%; height:100%; display:flex; align-items:center; justify-content:center;"><div style="filter: brightness(0) invert(1)" class="lds-ring"><div></div><div></div><div></div><div></div></div></div>
+  </div>
+  
+</template>
+
+<script src="libraries/fabric-2.3.6.min.js"></script>
+
+<script>
+(function(window, document, undefined) {
+  
+  class AddImagesOnImage extends HTMLElement {
+    
+    constructor() {
+      super();
+      
+      this.attachShadow({mode: 'open'});
+      this.shadowRoot.appendChild( document.importNode( document.querySelector('template').content, true ) );
+
+      this.canvasEl = this.shadowRoot.querySelector('canvas');
+      
+    }
+    
+    async imageUrlToElement(url) {
+      const imgEl = new Image();
+      let untilImgLoaded = new Promise((resolve, reject) => {
+        imgEl.onload = resolve;
+        imgEl.onerror = reject;
+      });
+      imgEl.src = url;
+      await untilImgLoaded;
+      return imgEl;
+    }
+    
+    async setBaseImage(imageUrl) {
+      
+      let imgEl = await this.imageUrlToElement(imageUrl);
+      
+      this.scaleFactor = this.parentNode.offsetWidth / imgEl.naturalWidth;
+      
+      this.canvasWidth = imgEl.naturalWidth * this.scaleFactor;
+      this.canvasHeight = imgEl.naturalHeight * this.scaleFactor;
+      
+      this.canvasEl.width = this.canvasWidth;
+      this.canvasEl.height = this.canvasHeight;
+      
+      if(this.canvas) this.canvas.dispose();
+      this.canvas = new window.fabric.Canvas(this.canvasEl, {
+        preserveObjectStacking: true,
+      });
+      
+      this.canvas.setBackgroundImage(imageUrl, this.canvas.renderAll.bind(this.canvas), {
+        scaleX: this.scaleFactor,
+        scaleY: this.scaleFactor,
+        originX: 'left',
+        originY: 'top'
+      });
+      
+    }
+    
+    addImageToGallery(imageUrl, thumbnailUrl, opts={}) {
+      let thumb = document.createElement("div");
+      thumb.style.backgroundImage = `url(${thumbnailUrl.replace(/\(/g, "\\(").replace(/\)/g, "\\)")})`;
+      if(opts.thumbnailBackgroundColor) thumb.style.backgroundColor = opts.thumbnailBackgroundColor;
+      thumb.onclick = () => { this.addImageToCanvas(imageUrl) };
+      this.shadowRoot.querySelector("#gallery-ctn").appendChild(thumb);
+    }
+    
+    async addImageToCanvas(imageUrl, opts={}) {
+      let loadingScreen = this.shadowRoot.querySelector("#loadingScreen");
+      loadingScreen.style.display = "unset";
+      
+      let imgEl = await this.imageUrlToElement(imageUrl);
+      let w = imgEl.naturalWidth;
+      let h = imgEl.naturalHeight;
+      
+      const img = new fabric.Image(imgEl, {
+        borderColor: "#2196f3",
+        cornerColor: "#2196f3",
+        cornerColorStroke: "#2196f3",
+        transparentCorners: false,
+        cornerStyle: "circle",
+        cornerSize: 20,
+      });
+      this.canvas.add(img);
+      
+      if(w > this.canvasWidth-60 || h > this.canvasHeight-60) {
+        let largestOverageRatio = w/(this.canvasWidth-120) > h/(this.canvasHeight-120) ? w/(this.canvasWidth-120) : h/(this.canvasHeight-120);
+        img.set({
+          scaleX: 1/largestOverageRatio,
+          scaleY: 1/largestOverageRatio,
+        });
+      }
+      
+      if(opts.centered === undefined || opts.centered) img.center();
+      
+      this.canvas.setActiveObject(img);
+      this.canvas.renderAll();
+      
+      loadingScreen.style.display = "none";
+      
+    }
+    
+    moveSelectedObjectBackwards() {
+      this.canvas.sendBackwards(this.canvas.getActiveObject());
+      this.canvas.renderAll();
+    }
+    moveSelectedObjectForward() {
+      this.canvas.bringForward(this.canvas.getActiveObject());
+      this.canvas.renderAll();
+    }
+    deleteSelectedObject() {
+      this.canvas.remove(this.canvas.getActiveObject());
+      this.canvas.renderAll();
+    }
+    
+    getCanvasDataUrl(imageType='png') {
+      return this.canvas.toDataURL({
+        format: imageType,
+        multiplier: 1/this.scaleFactor,
+      }); 
+    }
+    getCanvasObjectUrl(imageType='png') {
+      let dataUrl = this.canvas.toDataURL({
+        format: imageType,
+        multiplier: 1/this.scaleFactor,
+      }); 
+      dataUrl = dataUrl.replace("data:image/"+imageType+";base64,", "");
+      let blob = this.b64toBlob(dataUrl, 'image/'+imageType);
+      return URL.createObjectURL(blob);
+    }
+    
+    b64toBlob(b64Data, contentType, sliceSize) {
+      contentType = contentType || '';
+      sliceSize = sliceSize || 512;
+
+      var byteCharacters = atob(b64Data);
+      var byteArrays = [];
+
+      for (var offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+        var slice = byteCharacters.slice(offset, offset + sliceSize);
+
+        var byteNumbers = new Array(slice.length);
+        for (var i = 0; i < slice.length; i++) {
+          byteNumbers[i] = slice.charCodeAt(i);
+        }
+
+        var byteArray = new Uint8Array(byteNumbers);
+
+        byteArrays.push(byteArray);
+      }
+
+      var blob = new Blob(byteArrays, {type: contentType});
+      return blob;
+    }
+    
+    downloadCanvasAsImage(imageType="png") {
+      let dataUrl = this.getCanvasObjectUrl(imageType);
+      const a = document.createElement('a');
+      a.href = dataUrl;
+      a.download = "memed-io-output."+imageType;
+      this.parentNode.appendChild(a);
+      a.click();
+      this.parentNode.removeChild(a);
+    }
+    
+    
+  }
+  window.customElements.define('add-images-on-image', AddImagesOnImage);
+  
+
+})(window, document.currentScript.ownerDocument);
+</script>
+    <add-images-on-image></add-images-on-image>
+    <script> 
+      window.addEventListener("dragover", async function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+      });
+      window.addEventListener("drop", async function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        let file = e.dataTransfer.items[0].getAsFile();
+        let objectUrl = URL.createObjectURL(file);
+        editingAreaDiv.style.display = "block";
+        await new Promise(r => setTimeout(r, 200));
+        editor.setBaseImage(objectUrl);
+      });
+      window.addEventListener("paste", async function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        let kind = e.clipboardData.items[0].kind;
+        let url;
+        if(kind === "string") {
+          let string = await new Promise(resolve => e.clipboardData.items[0].getAsString(resolve));
+          if(!string.startsWith("http")) {
+            if(string.includes("<img ") && /\ssrc="(http.+?)"/.test(string)) {
+              string =  (string.match(/src=['"](http.+?)['"]/) || [])[1];
+            } else {
+              string = "http://"+string;
+            }
+          }
+          url = '/api/mediaProxy?url='+encodeURIComponent(string);
+        } else {
+          let file = e.clipboardData.items[0].getAsFile();
+          url = URL.createObjectURL(file);
+        }
+        loadingScreen.style.display = "block";
+        editingAreaDiv.style.display = "block";
+        await new Promise(r => setTimeout(r, 200));
+        await editor.setBaseImage(url);
+        loadingScreen.style.display = "none";
+      });
+      
+      let baseImageInput = document.querySelector("#baseImageInput");
+      let editor = document.querySelector("add-images-on-image");
+      baseImageInput.onchange = async function() {
+        editingAreaDiv.style.display = "block";
+        await new Promise(r => setTimeout(r, 200)); // need to make sure div is visible before fabric.js initialises
+        let objectUrl = URL.createObjectURL(this.files[0]);
+        await editor.setBaseImage(objectUrl);
+      }
+      let galleryImages = [
+    "https://cdn.glitch.com/a3cb1903-3df2-470f-9076-c2370808ed39%2F727db29eba8a7d31487c66abb3c18b7f.png?1537026572393",
+    "https://cdn.glitch.com/a3cb1903-3df2-470f-9076-c2370808ed39%2F879aa4d0246af1cc47f99a8c32d81773.png?1537074823673",
+    "https://cdn.glitch.com/a3cb1903-3df2-470f-9076-c2370808ed39%2F62b3dadfeda1be0a7ba25b90365b5259.png?1537085148579",
+    "https://cdn.glitch.com/a3cb1903-3df2-470f-9076-c2370808ed39%2Fglowing-red-eyes-png-4%20(1).png?1537086470731",
+    "https://cdn.glitch.com/a3cb1903-3df2-470f-9076-c2370808ed39%2Flaser-eye-meme-png.png?1537086011928",
+    "https://cdn.glitch.com/a3cb1903-3df2-470f-9076-c2370808ed39%2Fbc12f2484f2989077d8c4a9ef08f0641%20(1).png?1537075018865",
+    "https://cdn.glitch.com/a3cb1903-3df2-470f-9076-c2370808ed39%2F58e9155deb97430e819064e8.png?1537075350409",
+    "https://cdn.glitch.com/a3cb1903-3df2-470f-9076-c2370808ed39%2F58e91530eb97430e819064e2.png?1537075382090",
+    "https://cdn.glitch.com/a3cb1903-3df2-470f-9076-c2370808ed39%2F58e915b6eb97430e819064f1.png?1537075402881",
+    "https://cdn.glitch.com/a3cb1903-3df2-470f-9076-c2370808ed39%2F58e915beeb97430e819064f2.png?1537075409600",
+    "https://cdn.glitch.com/a3cb1903-3df2-470f-9076-c2370808ed39%2F58e915a3eb97430e819064ef.png?1537075468774",
+    "https://cdn.glitch.com/a3cb1903-3df2-470f-9076-c2370808ed39%2F58e91592eb97430e819064ed.png?1537075481108",
+    "https://cdn.glitch.com/a3cb1903-3df2-470f-9076-c2370808ed39%2F58e9157beb97430e819064ea.png?1537075492665",
+    "https://cdn.glitch.com/a3cb1903-3df2-470f-9076-c2370808ed39%2F58e9159aeb97430e819064ee.png?1537075505138",
+    "https://cdn.glitch.com/a3cb1903-3df2-470f-9076-c2370808ed39%2F5a4e52452da5ad73df7efe7e.png?1537075519443",
+    "https://cdn.glitch.com/a3cb1903-3df2-470f-9076-c2370808ed39%2F687775c5483140c23df70a3367ff8d0a.png?1537075744015",
+    "https://cdn.glitch.com/a3cb1903-3df2-470f-9076-c2370808ed39%2F5bec82019edb11efd46eb56e25c55bc1.png?1537075744418",
+    "https://cdn.glitch.com/a3cb1903-3df2-470f-9076-c2370808ed39%2F5a5a21cb6140c.png?1537075863176",
+    "https://cdn.glitch.com/a3cb1903-3df2-470f-9076-c2370808ed39%2F0a2c2f06ee2c7fa2f04082d131deaded.png?1537075863785",
+    "https://cdn.glitch.com/a3cb1903-3df2-470f-9076-c2370808ed39%2F8f06a8ef61738998e73cf4d404e254d2.png?1537076483242",
+    "https://cdn.glitch.com/a3cb1903-3df2-470f-9076-c2370808ed39%2Fd727b6f5527d0ac04db2ce0103fdf6e4.png?1537076483972",
+    "https://cdn.glitch.com/a3cb1903-3df2-470f-9076-c2370808ed39%2F4010e181ad7b97d2b49787fbfa4b6554.png?1537077724245",
+    "https://cdn.glitch.com/a3cb1903-3df2-470f-9076-c2370808ed39%2F041df0e054b8758c3bf248fdded66cb5.png?1537078242363",
+    "https://cdn.glitch.com/a3cb1903-3df2-470f-9076-c2370808ed39%2F59ed23c7b36f67806d66409d592ce78a.png?1537078242814",
+    "https://cdn.glitch.com/a3cb1903-3df2-470f-9076-c2370808ed39%2Fa3cb1903-3df2-470f-9076-c2370808ed39%252F6fc03a2e9d5157f82857b59ef3b63d72%20(1).png?1537081926564"
+  ];
+      // these were too small to have a thumbnail generated by glitch:
+      let noThumbnail = new Set([ 
+    "https://cdn.glitch.com/a3cb1903-3df2-470f-9076-c2370808ed39%2F58e9155deb97430e819064e8.png?1537075350409",
+    "https://cdn.glitch.com/a3cb1903-3df2-470f-9076-c2370808ed39%2F58e91592eb97430e819064ed.png?1537075481108"
+  ]);
+      // remember that the mediaProxy api is used by the url-pasting too, so if you ever get images stored locally, make sure you don't delete this API.
+      galleryImages = galleryImages.map(l => ({image:'/api/mediaProxy?url='+encodeURIComponent(l), thumbnail:noThumbnail.has(l) ? l : l.replace("%2F", "%2Fthumbnails%2F")}));
+      for(let {image, thumbnail} of galleryImages) {
+        editor.addImageToGallery(image, thumbnail, {thumbnailBackgroundColor:"#191919"});
+      }
+    </script>
+  </div>
+  
+  <style>
+    .page-description img {
+      display: block;
+      margin:0 auto;
+      max-height: 16em;
+    }
+  </style>
+    
+  
+  <div class="page-description"><p>Welcome! This is a simple laser eyes meme making tool. Simply drag and drop an image onto this page, or paste an image URL anywhere on the page, and then you can add the lens flares / glowing eyes stuff, and then download your image - no watermarks!</p>
+<p>The glowing eyes meme emerged from <a href="https://tvtropes.org/pmwiki/pmwiki.php/Main/GlowingEyes">a film/tv trope</a> in which a character eyes begin to glow when their super powers activate, or when the director wants to show that something supernatural is about to happen. One of the earliest known occurrences of glowing eyes in the meme-o-sphere, or lens flare eyes was in a 2013 post by Tumblr user <em>maohshounen</em> captioned &quot;ah yes my throne&quot;:</p>
+<p><img src="https://cdn.glitch.com/a3cb1903-3df2-470f-9076-c2370808ed39%2FPivLkGw.jpg?1537112485654" alt="skeleton lens flare eyes meme"></p>
+<p>The meme slowly became popular, and eventually reached Reddit where more mainstream memes were altered to incorperate some sort of laser eye effect:</p>
+<p><img src="https://cdn.glitch.com/a3cb1903-3df2-470f-9076-c2370808ed39%2Fimage.jpg?1537112694453" alt="glowing eyes meme"></p>
+<p>The <a href="https://i.imgur.com/7lLVsXe.jpg">sleeping shaq</a> meme was one of the memes that helped bring glowing eyes into the main-stream. Some of the Aku &quot;Extra Thicc&quot; meme videos, <a href="https://www.youtube.com/watch?v=hQLsb7Zm_MI">like this one</a>, used the glowing/laser eyes effect too.</p>
+<p>The eyes in most of the laser eye memes are red, but there have been a bunch that used different colors too. They&#39;re often created in photoshop using built-in effects, or by using a red glow png with a transparent background (which is how this meme maker works). I&#39;ve included a bunch of different lens flare images, and so you can layer them and resize them to create more complex effects.</p>
+<p>Hope you find this useful! You can <a href="http://upli.st/l/feedback-for-memed-io">leave feedback here</a>, if you have any. Please mention the name of this generator, and then the feedback you have for it, since this site has multiple generators.</p>
+</div>
+  <br>
+  <p style="text-align:center;"><a href="index.html"><img style="margin: 0 auto; display: block; height: 4em;" src="https://cdn.glitch.com/a3cb1903-3df2-470f-9076-c2370808ed39%2FNew%20Project.png?1536936895325"/></a></p>
+  <br><br>
+  
+     <!-- CSS SPINNER -->
+  <style>
+    .lds-ring {
+      display: inline-block;
+      position: relative;
+      width: 64px;
+      height: 64px;
+    }
+    .lds-ring div {
+      box-sizing: border-box;
+      display: block;
+      position: absolute;
+      width: 51px;
+      height: 51px;
+      margin: 6px;
+      border: 6px solid #444;
+      border-radius: 50%;
+      animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+      border-color: #444 transparent transparent transparent;
+    }
+    .lds-ring div:nth-child(1) {
+      animation-delay: -0.45s;
+    }
+    .lds-ring div:nth-child(2) {
+      animation-delay: -0.3s;
+    }
+    .lds-ring div:nth-child(3) {
+      animation-delay: -0.15s;
+    }
+    @keyframes lds-ring {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
+    }            
+  </style>
+  <div id="loadingScreen" style="display:none; position:fixed; top:0; bottom:0; left:0; right:0; background:#00000080; z-index:5;">
+    <div class="spinner" style="width:100%; height:100%; display:flex; align-items:center; justify-content:center;"><div style="filter: brightness(0) invert(1)" class="lds-ring"><div></div><div></div><div></div><div></div></div></div>
+  </div>
+  
+</div>
+
+</main>
+    
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-123166130-8"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-123166130-8');
+    </script>
+
+  </body>
+</html>

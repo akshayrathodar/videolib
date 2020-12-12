@@ -1,0 +1,1260 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Create Meme Videos & Templates - memed.io</title>
+    <meta name="description" content="Create meme videos easily with our simple meme video editor. You can add text to videos, and images, and white padding to the top if needed. You can even create templates that you can share with others.">
+    <link id="favicon" rel="icon" href="https://cdn.glitch.com/a3cb1903-3df2-470f-9076-c2370808ed39%2FNew%20Project%20(2).png?1536937204653" type="image/png">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script>if(window.location.origin.includes("glitch.me")) window.location.href = "https://memed.io"+window.location.pathname;</script>
+  </head>
+  <body>
+    
+    <style>
+      html {
+        box-sizing: border-box;
+      }
+      *, *:before, *:after {
+        box-sizing: inherit;
+      }
+    </style>
+    
+    <main><img id="templateThumbnail" style="position:absolute; top:-100vh; left:-100vw;">
+<link href="https://fonts.googleapis.com/css?family=Roboto:400,700" rel="stylesheet">
+<style>
+  body, body * {
+    font-family: 'Roboto', sans-serif; 
+  }
+  body {
+    background: #eeeeee9e; 
+  }
+</style>
+<script>
+  document.querySelector('meta[name="description"]').setAttribute("content", `Create a meme video with this simple online tool. You can add text, reposition it, change its color/size/font, and even rotate it! Add images and shapes too. It's completely free - we don't add any watermarks to your video, and there's no need to download anything. You can also add white padding to the top of the video if needed.`);
+  document.querySelector('title').innerText =  `Create a Meme Video (Online & Free) - memed.io`;
+</script>
+
+
+    <!-- CSS SPINNER -->
+  <style>
+    .lds-ring {
+      display: inline-block;
+      position: relative;
+      width: 64px;
+      height: 64px;
+    }
+    .lds-ring div {
+      box-sizing: border-box;
+      display: block;
+      position: absolute;
+      width: 51px;
+      height: 51px;
+      margin: 6px;
+      border: 6px solid #444;
+      border-radius: 50%;
+      animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+      border-color: #444 transparent transparent transparent;
+    }
+    .lds-ring div:nth-child(1) {
+      animation-delay: -0.45s;
+    }
+    .lds-ring div:nth-child(2) {
+      animation-delay: -0.3s;
+    }
+    .lds-ring div:nth-child(3) {
+      animation-delay: -0.15s;
+    }
+    @keyframes lds-ring {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
+    }            
+  </style>
+
+
+
+<div style="width:calc(100% - 2rem); max-width:800px; margin:0 auto; min-height:1.2vh;">
+
+  <h1 style="text-align: center; font-size: 2rem; margin: 2rem 0;"><img style="height: 2rem; vertical-align: text-bottom;" src="https://cdn.glitch.com/a3cb1903-3df2-470f-9076-c2370808ed39%2Fmemo_1f4dd.png?1537193047965"> Create a Meme Video<span style="display:inline-block;position:absolute;top:-500px;"> Online</span> <img style="height: 2rem; vertical-align: text-bottom;" src="https://cdn.glitch.com/a3cb1903-3df2-470f-9076-c2370808ed39%2Fimage.png?1537193021780"></h1>
+  
+  <div id="customVideoInputArea" style="display:none; position:relative; background:#eee; height: 7rem; border-radius: 2px; margin-bottom: 1rem; border: 3px dashed #c1c1c1;">
+    <div style="width:100%; height:100%; display:flex;">
+      <div style="margin:auto; color:#444; padding: 0 1rem;"><b>Click</b> here, or <b>drag &amp; drop</b> a video, or <b>paste</b> a video URL.</div>
+    </div>
+    <input id="userVideoInput" type="file" accept="video/mp4,video/x-m4v,video/quicktime,video/*,image/gif" style="opacity:0; position:absolute; top:0; left:0; right:0; bottom:0; display: block; width: 100%; cursor: pointer;">
+  </div>
+  
+  <div id="loadingEditingSpinner" style="position:fixed; top:0; bottom:0; left:0; right:0; background:#ffffff; z-index:5; overflow:auto;">
+    <div style="width:100%; height:100%; display:flex;">
+      <div style="text-align: center; margin:auto;">
+        <div class="lds-ring"><div></div><div></div><div></div><div></div></div>
+      </div>
+    </div>
+  </div>
+  
+  <div id="videoEditingArea" style="display:none;">
+    <!--<input id="customTextInputEl" oninput="updateText();" style="width: 100%; margin-bottom: 0.5rem; font-size: 1.3rem; padding: 0.4rem;" value="Your custom text.">-->
+    <div style="position:relative;">
+      <div id="videoPaddingTopEl" style="border: 1px solid #bbb;border-bottom:none; background: white; display:none;"></div>
+      <div id="fabricWrapperEl" style="position:absolute;top:0;left:0;z-index: 3;">
+        <canvas id="textCanvasEl"></canvas>
+      </div>
+      <video id="memeVideo" autoplay loop muted style="width: 100%; display: block;"></video>
+<!--       <img id="memeGif" style="width: 100%; display: none;"/> -->
+      <div id="videoPaddingBottomEl" style="border: 1px solid #bbb;border-top:none; background: white; display:none;"></div>
+    </div>
+    <div id="selectionEditMenu" style="display:none; justify-content:center; margin-top: 1rem; flex-wrap: wrap;">
+      <input id="fillColorInput" type="color" oninput="canvasSelection.forEach(o => o.set({fill:this.value})); textCanvas.renderAll();" style="width:4rem;">
+      <select id="fontFamilyInput" onchange="canvasSelection.forEach(o => {  if(this.value[0] === '@') { o.set({fontFamily:this.value.slice(1)}); textCanvas.renderAll();  } else { (new FontFaceObserver(this.value.split('\'')[1])).load().then(r => { o.set({fontFamily:this.value}); textCanvas.renderAll(); }).catch(e => console.error(e)); }  });">
+        <option value="'Roboto', sans-serif" style="font-family:'Roboto', sans-serif;">Font</option>
+        <option value="'Roboto', sans-serif" style="font-family:'Roboto', sans-serif;">Roboto</option>
+        <option value="@'Arial'" style="font-family:Arial;">Arial</option>
+        <option value="@'sans-serif'" style="font-family:sans-serif;">sans-serif</option>
+        <option value="@'monospace'" style="font-family:monospace;">monospace</option>
+        <option value="@'serif'" style="font-family:serif;">serif</option>
+        <option value="@'Helvetica'" style="font-family:'Helvetica';">Helvetica</option>
+        <option value="@'Georgia'" style="font-family:'Georgia';">Georgia</option>
+        <option value="@'Times New Roman'" style="font-family:'Times New Roman';">Times New Roman</option>
+        <option value="'Pacifico', cursive" style="font-family: 'Pacifico', cursive;">Pacifico</option>
+        <option value="'Anton', sans-serif" style="font-family: 'Anton', sans-serif;">Anton</option>
+        <option value="'Lobster', cursive" style="font-family: 'Lobster', cursive;">Lobster</option>
+        <option value="'Indie Flower', cursive" style="font-family: 'Indie Flower', cursive;">Indie Flower</option>
+        <option value="'Shadows Into Light', cursive" style="font-family: 'Shadows Into Light', cursive;">Shadows Into Light</option>
+        <option value="'Dancing Script', cursive" style="font-family: 'Dancing Script', cursive;">Dancing Script</option>
+        <option value="'Bree Serif', serif" style="font-family: 'Bree Serif', serif">Bree Serif</option>
+        <option value="'Amatic SC', cursive" style="font-family: 'Amatic SC', cursive">Amatic SC</option>
+        <option value="'Righteous', cursive" style="font-family: 'Righteous', cursive">Righteous</option>
+        <option value="'Acme', sans-serif" style="font-family: 'Acme', sans-serif">Acme</option>
+        <option value="'Gloria Hallelujah', cursive" style="font-family: 'Gloria Hallelujah', cursive">Gloria Hallelujah</option>
+        <option value="'Permanent Marker', cursive" style="font-family: 'Permanent Marker', cursive">Permanent Marker</option>
+        <option value="'Cinzel', serif" style="font-family: 'Cinzel', serif">Cinzel</option>
+        <option value="'Great Vibes', cursive" style="font-family: 'Great Vibes', cursive">Great Vibes</option>
+        <option value="'Do Hyeon', sans-serif" style="font-family: 'Do Hyeon', sans-serif">Do Hyeon</option>
+        <option value="'Merienda', cursive" style="font-family: 'Merienda', cursive">Merienda</option>
+        <option value="'Kaushan Script', cursive" style="font-family: 'Kaushan Script', cursive">Kaushan Script</option>
+        <option value="'Courgette', cursive" style="font-family: 'Courgette', cursive">Courgette</option>
+        <option value="'Domine', serif" style="font-family: 'Domine', serif">Domine</option>
+        <option value="'Monoton', cursive" style="font-family: 'Monoton', cursive">Monoton</option>
+        <option value="'Russo One', sans-serif" style="font-family: 'Russo One', sans-serif">Russo One</option>
+        <option value="'Kavoon', cursive" style="font-family: 'Kavoon', cursive">Kavoon</option>
+        <option value="'Cormorant Garamond', serif" style="font-family: 'Cormorant Garamond', serif">Cormorant Garamond</option>
+        <option value="'Luckiest Guy', cursive" style="font-family: 'Luckiest Guy', cursive">Luckiest Guy</option>
+        <option value="'Monda', sans-serif" style="font-family: 'Monda', sans-serif">Monda</option>
+        <option value="'Sacramento', cursive" style="font-family: 'Sacramento', cursive">Sacramento</option>
+        <option value="'Bangers', cursive" style="font-family: 'Bangers', cursive">Bangers</option>
+        <option value="'Cabin Sketch', cursive" style="font-family: 'Cabin Sketch', cursive">Cabin Sketch</option>
+        <option value="'Homemade Apple', cursive" style="font-family: 'Homemade Apple', cursive">Homemade Apple</option>
+        <option value="'Chewy', cursive" style="font-family: 'Chewy', cursive">Chewy</option>
+        <option value="'Press Start 2P', cursive" style="font-family: 'Press Start 2P', cursive">Press Start 2P</option>
+        <option value="'Allura', cursive" style="font-family: 'Allura', cursive">Allura</option>
+        <option value="'Rock Salt', cursive" style="font-family: 'Rock Salt', cursive">Rock Salt</option>
+        <option value="'Fredericka the Great', cursive" style="font-family: 'Fredericka the Great', cursive">Fredericka the Great</option>
+        <option value="'Marcellus SC', serif" style="font-family: 'Marcellus SC', serif">Marcellus SC</option>
+        <option value="'Love Ya Like A Sister', cursive" style="font-family: 'Love Ya Like A Sister', cursive">Love Ya Like A Sister</option>
+        <option value="'Copse', serif" style="font-family: 'Copse', serif">Copse</option>
+      </select>
+      <select id="opacityInput" onchange="canvasSelection.forEach(o => o.set({opacity:Number(this.value)})); textCanvas.renderAll();">
+        <option value="1">Opacity (100%)</option>
+        <option value="0.9">90%</option>
+        <option value="0.8">80%</option>
+        <option value="0.7">70%</option>
+        <option value="0.6">60%</option>
+        <option value="0.5">50%</option>
+        <option value="0.4">40%</option>
+        <option value="0.3">30%</option>
+        <option value="0.2">20%</option>
+        <option value="0.1">10%</option>
+        <option value="0.05">5%</option>
+      </select>
+      <select id="strokeWidthInput" onchange="canvasSelection.forEach(o => o.set({strokeWidth:Number(this.value)})); textCanvas.renderAll(); textCanvas.freeDrawingBrush.width=Number(this.value);">
+        <option value="1">Stroke Width (1)</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+        <option value="9">9</option>
+        <option value="10">10</option>
+        <option value="15">15</option>
+        <option value="20">20</option>
+        <option value="25">25</option>
+        <option value="30">30</option>
+        <option value="40">40</option>
+        <option value="50">50</option>
+        <option value="60">60</option>
+        <option value="80">80</option>
+        <option value="100">100</option>
+        <option value="120">120</option>
+      </select>
+      <input id="strokeColorInput" type="color" value="#ffffff" oninput="canvasSelection.forEach(o => o.set({stroke:this.value})); textCanvas.renderAll(); textCanvas.freeDrawingBrush.color=this.value;" style="width:4rem;">
+      <button onclick="textCanvas.getActiveObject().bringForward(); textCanvas.renderAll();" style="margin-right: 0;">⬆</button>
+      <button onclick="textCanvas.getActiveObject().sendBackwards(); textCanvas.renderAll();" style="margin-left: 0;">⬇</button>
+      <button onclick="textCanvas.remove(textCanvas.getActiveObject()); textCanvas.renderAll();">✖</button>
+    </div>
+    
+    <div id="mainEditMenu" style="display:flex; justify-content:center; margin-top: 1rem; flex-wrap:wrap;">
+      <button onclick="renderVideo()" style="padding: 0 0.7rem; cursor:pointer;">Download Video</button>
+      <button onclick="addTextToCanvas()" style="padding: 0 0.7rem; cursor:pointer;">Add a Text Block</button>
+      <div style="cursor:pointer; width:max-content; position:relative;">
+        <input type="file" accept="image/*" oninput="addImageToCanvas(window.URL.createObjectURL(this.files[0])); this.value='';" style="display: block; width: 100%; position: absolute; height: 100%; top: 0; bottom: 0; left: 0; right: 0; opacity: 0; z-index:2;">
+        <button style="width:max-content; height: 100%; padding: 0 0.7rem;">Add an Image</button>
+      </div>
+      <select id="videoSelectorEl" style="display:none;" onchange="init(this.value)"></select> <!-- this is only used if there are preset videos that the user can select -->
+      <select id="addShapeInput" onchange="if(this.value) { addShapeToCanvas(this.value); this.value=''; }">
+        <option value="">Add Shape...</option>
+        <option value="rectangle">Rectangle</option>
+        <option value="circle">Circle</option>
+        <option value="triangle">Triangle</option>
+      </select>
+      <select id="videoPaddingTopInput" onchange="resizeCanvas()">
+        <option value="0">Top padding: 0%</option>
+        <option value="0.1">Top padding: 10%</option>
+        <option value="0.2">Top padding: 20%</option>
+        <option value="0.3">Top padding: 30%</option>
+        <option value="0.4">Top padding: 40%</option>
+        <option value="0.5">Top padding: 50%</option>
+        <option value="0.6">Top padding: 60%</option>
+        <option value="0.7">Top padding: 70%</option>
+        <option value="0.8">Top padding: 80%</option>
+        <option value="0.9">Top padding: 90%</option>
+        <option value="1">Top padding: 100%</option>
+      </select>
+      <select id="videoPaddingBottomInput" onchange="resizeCanvas()">
+        <option value="0">Bottom padding: 0%</option>
+        <option value="0.1">Bottom padding: 10%</option>
+        <option value="0.2">Bottom padding: 20%</option>
+        <option value="0.3">Bottom padding: 30%</option>
+        <option value="0.4">Bottom padding: 40%</option>
+        <option value="0.5">Bottom padding: 50%</option>
+        <option value="0.6">Bottom padding: 60%</option>
+        <option value="0.7">Bottom padding: 70%</option>
+        <option value="0.8">Bottom padding: 80%</option>
+        <option value="0.9">Bottom padding: 90%</option>
+        <option value="1">Bottom padding: 100%</option>
+      </select>
+      <select onchange="textCanvas.isDrawingMode = this.value ? true : false; if(this.value) { updateSelectionMenu('path'); textCanvas.freeDrawingBrush.width=Number(strokeWidthInput.value); textCanvas.freeDrawingBrush.color=strokeColorInput.value; }">
+        <option value="">Draw Mode Off</option>
+        <option value="1">Draw Mode On</option>
+      </select>
+      <button onclick="beginTemplateCreation('create')" style="padding: 0 0.7rem; cursor:pointer;">Save as template...</button>
+    </div>
+    
+    <style>
+      #selectionEditMenu > * { height:2rem; margin:0.25rem; }
+      #mainEditMenu > * { height:2rem; margin:0.25rem; }
+    </style>
+    
+  </div>
+  
+  <style>
+    .page-description img {
+      display: block;
+      margin:0 auto;
+      max-height: 16em;
+    }
+  </style>
+  <div id="pageDescriptionEl" class="page-description"><h2 id="how-to-make-a-meme-video">How to Make a Meme Video</h2>
+<p>Hello! Here&#39;s how to make a meme video:</p>
+<ol>
+<li>Paste a video URL on this page. You can also drag and drop a video file, or click the upload area to browser for a video file on your device.</li>
+<li>Add text and images using the menu that&#39;s below the video.</li>
+<li>Resposition the text, change the font and size as desired.</li>
+<li>Click &quot;Download Video&quot;, and you&#39;re done!</li>
+</ol>
+<p>Many video memes have white &quot;padding&quot; at the top of the video where the text goes. You can add padding to the top or bottom of the video by using the menu below the video. If you&#39;d like black padding, or a different color, you can click &quot;add shape&quot;, and then choose a rectangle, and position it over the white padding, and then change that rectangle&#39;s color.</p>
+<p>Making a meme video with memed.io is absurdly easy. There&#39;s no need to sign up, and we don&#39;t add any watermarks to your video. It currently works best in Chrome and Firefox, so I&#39;d recommend switching to one of those browsers if possible.</p>
+<p>If you have any ideas to improve this tool, or need more help making meme videos, you can <a href="http://upli.st/l/feedback-for-memed-io">leave feedback here</a>. Please mention the name of this page, and then the feedback you have for it, since this site has many pages. Thanks!</p>
+</div>
+  <br>
+  <p style="text-align:center;"><a href="index.html"><img style="margin: 0 auto; display: block; height: 4em;" src="https://cdn.glitch.com/a3cb1903-3df2-470f-9076-c2370808ed39%2FNew%20Project.png?1536936895325"/></a></p>
+  <br><br>
+  
+  <script type="text/justsomedata" id="templateDataScriptEl">{[[[templateData]]]}</script>
+  
+  <script src="libraries/fabric-2.3.6.min.js"></script>
+  <script>
+    let videoUrl, textCanvas, memeVideo, w, h, canvasSelection = [];
+    
+    let defaultCanvasText = `Click this text to move & edit it`;
+    if(!defaultCanvasText.trim() || defaultCanvasText === "false") defaultCanvasText = false;
+    
+    let mode = "user-provides-video";
+    if(mode === "user-provides-video") {
+      customVideoInputArea.style.display = "block";
+      
+      userVideoInput.onchange = function() {
+        videoEditingArea.style.display = "block";
+        let objectUrl = URL.createObjectURL(this.files[0]);
+        init(objectUrl);
+      };
+      window.addEventListener("dragover", async function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+      });
+      window.addEventListener("drop", async function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        let file = e.dataTransfer.items[0].getAsFile();
+        let objectUrl = URL.createObjectURL(file);
+        videoEditingArea.style.display = "block";
+        init(objectUrl);
+      });
+      window.addEventListener("paste", async function(e) {
+        if(e.composedPath().includes(templateSavingScreen)) return;
+        e.preventDefault();
+        e.stopPropagation();
+        let kind = e.clipboardData.items[0].kind;
+        let url;
+        if(kind === "string") {
+          let string = await new Promise(resolve => e.clipboardData.items[0].getAsString(resolve));
+          if(!string.startsWith("data:") && !string.startsWith("http")) string = "http://"+string;
+          url = string;
+        } else {
+          let file = e.clipboardData.items[0].getAsFile();
+          url = URL.createObjectURL(file);
+        }
+        videoEditingArea.style.display = "block";
+        init(url);
+      });
+      window.addEventListener("click", function(e) {
+        if(textCanvas && e.composedPath && !e.composedPath().includes(videoEditingArea)) {
+          textCanvas.discardActiveObject();
+          textCanvas.renderAll();
+        }
+      });
+      
+      videoEditingArea.style.display = "block";
+      init("https://cdn.glitch.com/a3cb1903-3df2-470f-9076-c2370808ed39%2Fexample-clip-rabbit.webm?1537332191810");
+      
+    } else if(mode === "preset-videos") {
+    
+      let videos = false;
+      for(let video of videos) {
+        video.url = window.location.origin+"/api/mediaProxy?url="+encodeURIComponent(video.url); 
+      }
+      videoSelectorEl.innerHTML = videos.map(o => `<option value="${o.url}">${o.label}</option>`).join("");
+      videoSelectorEl.style.display = "inline-block";
+      videoEditingArea.style.display = "block";
+      init(videos[0].url);
+    
+    } else if(mode === "template") {
+      window.templateData = JSON.parse(templateDataScriptEl.innerHTML);
+      console.log(templateData);
+      
+      document.querySelector('meta[name="description"]').setAttribute("content", `A user-made video meme template. Title: ${templateData.title}. Description: ${templateData.htmlDescription.slice(0, 400)}`);
+      document.querySelector('title').innerText =  templateData.title+" - memed.io";
+      document.querySelector('h1').innerText =  templateData.title;
+      
+      templateThumbnail.src = templateData.thumbnailUrl;
+      
+      pageDescriptionEl.innerHTML = `<p>This template was made by a memed.io user. You can easily <a href="video-meme-maker" target="_blank">make your own video meme templates</a> with <i>memed.io</i>. Here's the description provided by the user who made this template:</p>`;
+      let userHtml = document.createElement("div");
+      userHtml.innerHTML = templateData.description; // this has been sanitized already
+      userHtml.querySelectorAll("a").forEach(el => el.setAttribute("rel", "nofollow"));
+      pageDescriptionEl.appendChild(userHtml);
+      let descriptionFooter = document.createElement("div");
+      descriptionFooter.innerHTML = `
+       <hr> 
+       <p>Are you the owner of this template? If so, you can <button onclick="beginTemplateCreation('update')">click here</button> to update it. If you're not the owner, but you want to make an edited copy of this template, just make your edits and then click the "Save as template" button below the video.</p>
+       <p>Got some feedback for memed.io? Please <a href="http://upli.st/l/feedback-for-memed-io" target="_blank">post it here</a>. Thanks!</p>`;
+      pageDescriptionEl.appendChild(descriptionFooter);
+      
+      if(templateData.topPadding !== 0) videoPaddingTopInput.value = templateData.topPadding;
+      if(templateData.bottomPadding !== 0) videoPaddingBottomInput.value = templateData.bottomPadding;
+      
+      videoEditingArea.style.display = "block";
+      init(templateData.videoUrl, templateData.fabricDataString);
+    }
+    
+    async function init(url, fabricDataString) {
+      
+      if(url.includes("https://imgur.com/a/")) {
+        alert("You've tried to load an imgur *album* address. Please right-click (or long-press) on the imgur video to get its direct link, and then paste that here instead. When you right click on the imgur video, you should see an option to \"Copy video address\", or something like that.");
+        return; 
+      }
+      
+      if(url.startsWith("https://youtu") || url.startsWith("https://www.youtu")) {
+        alert("It looks like you've pasted a YouTube URL. We'll try to download it for you, but sometimes YouTube blocks our server. If it doesn't load, you'll have to download the video yourself, and then upload the video file here. You can find an online YouTube video downloader by simply searching for 'youtube video downloader' on duck.com (If you use google.com, you likely won't find one, since they hide those search results). Video downloader sites are often very spammy, so you'll probably want to arm yourself with an adblocker.");
+      }
+      
+      selectionEditMenu.style.display = "none";
+      loadingEditingSpinner.style.display = "block";
+      
+      window.originalVideoUrl = url; // for template saving
+      
+      
+      // do this after saving template video url, because if imgur changes up its stuff,
+      // we want the original url the user requestd, so we can adapt:
+      if(url.endsWith(".gifv")) url = url.replace(/\.gifv$/, ".mp4");
+      if(url.startsWith("https://imgur.com/")) url = url.replace("//imgur", "//i.imgur") + ".mp4";
+      
+      if(!url.startsWith("blob:") && !url.startsWith("https://memed.io/") && !url.startsWith("data:")) {
+        url = window.location.origin+"/api/mediaProxy?url="+encodeURIComponent(url);
+      }
+      
+      let blobType;
+      if(url.startsWith("blob:")) {
+        let blob = await fetch(url).then(r => r.blob());
+        blobType = blob.type;
+      }
+      
+      let originalVideoUrlWithOrigin = originalVideoUrl.startsWith("/") ? window.location.origin+originalVideoUrl : originalVideoUrl;
+      
+      if(url.startsWith("data:image/gif") || new URL(originalVideoUrlWithOrigin).pathname.endsWith("gif") || (url.startsWith("blob:") && blobType === "image/gif")) {
+        
+        if(!document.createElement('canvas').toDataURL('image/webp').startsWith('data:image/webp')) {
+          alert("Sorry! For technical reasons, editing GIFs is currently only supported in the Chrome web browser. Other browsers are yet to implement important features (wembp encoding) which make this possible.");
+          return;
+        }
+        if(!window.GIF) await new Promise((resolve, reject) => {let js = document.createElement("script"); js.src="/library/gifuct-js.min.js"; js.onload=resolve; js.onerror=reject; document.body.appendChild(js)});
+        if(!window.Whammy) await new Promise((resolve, reject) => {let js = document.createElement("script"); js.src="/library/whammy-15-dec-2015.js"; js.onload=resolve; js.onerror=reject; document.body.appendChild(js)});
+        let gifFrames = await fetch(url).then(resp => resp.arrayBuffer()).then(buff => new GIF(buff)).then(gif => gif.decompressFrames(true));
+        let webpFrames = [];
+        let canvas = document.createElement('canvas');
+        canvas.width = gifFrames[0].dims.width;
+        canvas.height = gifFrames[0].dims.height;
+        let ctx = canvas.getContext("2d");
+        let tmpCanvas = document.createElement('canvas');
+        let tmpCtx = tmpCanvas.getContext("2d");
+        let frameImageData;
+        for(let frame of gifFrames) {
+          if(!frameImageData || frame.dims.width !== frameImageData.width || frame.dims.height !== frameImageData.height) {
+            tmpCanvas.width = frame.dims.width;
+            tmpCanvas.height = frame.dims.height;
+            frameImageData = tmpCtx.createImageData(frame.dims.width, frame.dims.height);
+          }
+          frameImageData.data.set(frame.patch);
+          tmpCtx.putImageData(frameImageData, 0, 0);
+         
+          ctx.drawImage(tmpCanvas, frame.dims.left, frame.dims.top); // we use a `tmpCanvas` so we can "layer" the frames on `canvas` to handle transparency
+          webpFrames.push(canvas.toDataURL("image/webp"));
+        }
+        let fps = 1/(gifFrames[0].delay/1000); // <-- assumes all frames have same delay
+        let webmEncoder = new Whammy.Video(fps);
+        webpFrames.forEach(f => webmEncoder.add(f));
+        let blob = await new Promise(resolve => webmEncoder.compile(false, resolve));
+        let videoBlobUrl = URL.createObjectURL(blob);
+        videoUrl = videoBlobUrl;
+        
+      } else {
+        videoUrl = url;
+      }
+      memeVideo = document.querySelector("#memeVideo");
+      memeVideo.volume = 0;
+      memeVideo.muted = true;
+      memeVideo.onerror = function() {
+        let msg = "Sorry! I was unable to process that file :|";
+        if(!url.startsWith("blob")) msg += " When pasting a video URL, make sure that the URL is a *direct* link to the video file rather than a link to a webpage that has the video embedded in it. YouTube links are an exception to this rule - they are allowed, but, Vimeo/Streamable/etc. links are not supported."
+        else msg += " It may be that it's not a video file, or that your web browser doesn't support that kind of video file."
+        alert(msg);
+        loadingEditingSpinner.style.display = "none";
+        return;
+      }
+      
+      memeVideo.src = videoUrl;
+      //memeVideo.play();
+      
+      while(memeVideo.readyState < 2) {
+        await new Promise(r => setTimeout(r, 100));
+      }
+
+      let topPadding = Math.round(videoPaddingTopInput.value * memeVideo.offsetHeight);
+      let bottomPadding = Math.round(videoPaddingBottomInput.value * memeVideo.offsetHeight);
+
+      videoPaddingTopEl.style.height = topPadding+"px";
+      videoPaddingBottomEl.style.height = bottomPadding+"px";
+      
+      videoPaddingTopEl.style.display = topPadding ? 'block' : 'none';
+      videoPaddingBottomEl.style.display = bottomPadding ? 'block' : 'none';
+
+      let w = memeVideo.offsetWidth;
+      let h = memeVideo.offsetHeight + topPadding + bottomPadding;
+
+      textCanvasEl.width = w;
+      textCanvasEl.height = h;
+
+      await new Promise(r => setTimeout(r, 100)); // fabric.js needs a pause
+
+      // FIRST INIT:
+      if(!textCanvas) {
+        
+        textCanvas = new fabric.Canvas(textCanvasEl, {
+          preserveObjectStacking: true,
+        });
+      
+        textCanvas.freeDrawingBrush.width = 10;
+
+        if(fabricDataString) {
+          let data = JSON.parse(fabricDataString);
+          for(let obj of data.objects) {
+            if(obj.type === "image") {
+              obj.src = "/api/mediaProxy?url="+encodeURIComponent(obj.src);
+            }
+          }
+          textCanvas.loadFromDatalessJSON(JSON.stringify(data));
+          let canvasScaleMultiplier = memeVideo.offsetWidth / templateData.originalWidth;
+          textCanvas.forEachObject(function(obj) {
+            obj.scaleX = obj.scaleX * canvasScaleMultiplier;
+            obj.scaleY = obj.scaleY * canvasScaleMultiplier;
+            obj.left = obj.left * canvasScaleMultiplier;
+            obj.top = obj.top * canvasScaleMultiplier;
+            obj.setCoords();
+          });
+        }
+
+        fabric.Object.prototype.set({
+          borderColor: "#2196f3",
+          cornerColor: "#2196f3",
+          cornerColorStroke: "#2196f3",
+          transparentCorners: false,
+          cornerStyle: "circle",
+          cornerSize: 20,
+        });
+
+        textCanvas.on("selection:created", updateSelectionMenu);
+        textCanvas.on("selection:updated", updateSelectionMenu);
+        textCanvas.on("selection:cleared", function(e) {
+          if(!textCanvas.isDrawingMode) selectionEditMenu.style.display = "none";
+          canvasSelection = [];
+        });
+
+        if(!fabricDataString && defaultCanvasText) {
+           let textObject = new fabric.IText(defaultCanvasText, {
+            left: 0.025*w,
+            top: 0.025*h,
+            fill: "#ffffff",
+            fontFamily: "'Roboto', sans-serif",
+            fontSize: 0.055*w,
+          });
+          textCanvas.add(textObject);
+          if(textObject.width > w) {
+            let scaleFactor = w*0.95 / textObject.width;
+            textObject.scaleX = scaleFactor;
+            textObject.scaleY = scaleFactor;
+            textObject.top = textObject.top + 0.5*(textObject.height-(textObject.height*scaleFactor));
+          }
+          if(textObject.get("top") + textObject.get("height")*0.5 < topPadding) {
+            textObject.set({fill:"#000000"}); // so that the white text isn't hidden in the white padding
+          }
+        }
+      }
+
+      resizeCanvas();
+      textCanvas.renderAll();
+      
+      loadingEditingSpinner.style.display = "none";
+
+    }
+    
+    
+    function updateSelectionMenu(selectionOrType) {
+      let type;
+      if(typeof selectionOrType === "string") {
+        type = selectionOrType;
+      } else {
+        let e = selectionOrType;
+        type = e.selected[0].get("type"); 
+        fillColorInput.value = e.selected[0].get("fill");
+        fontFamilyInput.value = e.selected[0].get("fontFamily");
+        opacityInput.value = e.selected[0].get("opacity");
+        strokeColorInput.value = e.selected[0].get("stroke");
+        strokeWidthInput.value = e.selected[0].get("strokeWidth");
+        canvasSelection = e.selected;
+      }
+
+      selectionEditMenu.style.display = "flex";
+
+      fillColorInput.style.display = "inline-block";
+      fontFamilyInput.style.display = "inline-block";
+      opacityInput.style.display = "inline-block";
+      strokeWidthInput.style.display = "inline-block";
+      strokeColorInput.style.display = "inline-block";
+
+      if(type === "i-text") {
+        // hide none
+      } else if(["rect", "circle", "triangle"].includes(type)) {
+        fontFamilyInput.style.display = "none";
+      } else if(type === "image") {
+        fillColorInput.style.display = "none";
+        fontFamilyInput.style.display = "none";
+      } else if(type === "path") {
+        fontFamilyInput.style.display = "none";
+      }
+    }
+    
+    
+    let resizeTimer;
+    window.addEventListener("resize", function() {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(resizeCanvas, 250);
+    });
+    document.addEventListener("keypress", (e) => {
+      if(!textCanvas.getActiveObject()) return;
+      if(e.which === 127 && !textCanvas.getActiveObject().isEditing) {
+        if(!document.activeElement.nodeName || !["input", "textarea"].includes(document.activeElement.nodeName.toLowerCase())) {
+          textCanvas.remove(textCanvas.getActiveObject());
+        }
+      }
+    });
+    
+    function resizeCanvas() {
+      if(textCanvas) {
+        let topPadding = Math.round(videoPaddingTopInput.value * memeVideo.offsetHeight);
+        let bottomPadding = Math.round(videoPaddingBottomInput.value * memeVideo.offsetHeight);
+        
+        videoPaddingTopEl.style.height = topPadding+"px";
+        videoPaddingBottomEl.style.height = bottomPadding+"px";
+        videoPaddingTopEl.style.display = topPadding ? 'block' : 'none';
+        videoPaddingBottomEl.style.display = bottomPadding ? 'block' : 'none';
+        
+        let canvasScaleMultiplier = memeVideo.offsetWidth / textCanvas.width; // <-- tells us how much objects need to move/scale by due to this resize event
+        textCanvas.forEachObject(function(obj) {
+          obj.scaleX = obj.scaleX * canvasScaleMultiplier;
+          obj.scaleY = obj.scaleY * canvasScaleMultiplier;
+          obj.left = obj.left * canvasScaleMultiplier;
+          obj.top = obj.top * canvasScaleMultiplier;
+          obj.setCoords();
+        });
+        textCanvas.setWidth(memeVideo.offsetWidth);
+        textCanvas.setHeight(memeVideo.offsetHeight + topPadding + bottomPadding);
+        
+        // little helper/hack in case there's just one bit of white text on the canvas and they just added padding (so that the white text isn't hidden in the white padding):
+        let objs = textCanvas.getObjects();
+        if(objs.length === 1 && objs[0].get("fill") === "#ffffff" && objs[0].get("top") + objs[0].get("height")*0.5 < topPadding) {
+          objs[0].set({fill:"#000000"});
+        }
+        
+        textCanvas.renderAll();
+      }
+    }
+    
+    function addShapeToCanvas(type) {
+      let obj;
+      if(type === "circle") obj = new fabric.Circle({ radius: 40, fill: '#ff0000', left: 0, top: 0 });
+      if(type === "triangle") obj = new fabric.Triangle({ width: 80, height: 80, fill: '#ff0000', left: 0, top: 0 });
+      if(type === "rectangle") obj = new fabric.Rect({ width: 80, height: 80, fill: '#ff0000', left: 0, top: 0 });
+      textCanvas.add(obj);
+      obj.center();
+      textCanvas.renderAll();
+    }
+  
+    async function addImageToCanvas(url) {
+      if(!url.startsWith("blob:") && !url.startsWith("https://memed.io/")) throw new Error("cross domain images are not allowed");
+      
+      // convert svg blobs to data urls (had to do this because fabric.js apparently doesn't like me replacing svg image src with a png in the serialised fabric data):
+      if(url.startsWith("blob:")) {
+        let blob = await fetch(url).then(r => r.blob()); 
+        if(blob.type === "image/svg+xml") {
+          let img = new Image();
+          img.src = url;
+          await new Promise(r => img.naturalWidth ? r() : (img.onload=r));
+          let canvas = document.createElement("canvas");
+          let ratio = img.naturalWidth/img.naturalHeight;
+          canvas.width = 1000;
+          canvas.height = 1000/ratio;
+          canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+          url = canvas.toDataURL("image/png");
+        }
+      }
+      
+      fabric.Image.fromURL(url, function(oImg) {
+        textCanvas.add(oImg);
+        let w = oImg.width;
+        let h = oImg.height;
+        if(w > textCanvas.getWidth() || h > textCanvas.getHeight()) {
+          let largestOverageRatio = w/(textCanvas.getWidth()-30) > h/(textCanvas.getHeight()-30) ? w/(textCanvas.getWidth()-30) : h/(textCanvas.getHeight()-30);
+          oImg.set({
+            scaleX: 1/largestOverageRatio,
+            scaleY: 1/largestOverageRatio,
+          });
+        }
+        oImg.center();
+        textCanvas.renderAll();
+      });
+
+      
+    }
+    function addTextToCanvas() {
+      let text = new fabric.IText("Click me to edit", {
+        left: 0,
+        top: 0,
+        fill: "#ffffff",
+        fontFamily: "'Roboto', sans-serif",
+        fontSize: 0.085*textCanvas.getWidth(),
+      });
+      textCanvas.add(text);
+      text.center();
+      textCanvas.renderAll();
+    }
+    
+    
+    
+    
+    async function renderVideo() {
+      loadingScreen.style.display = "block";
+      loadingProgressArea.style.display = "block";
+      videoOutputArea.style.display = "none";
+      loadingProgressText.innerHTML = "0%";
+      
+      let textImageOverlay = await new Promise(resolve => {
+        let image = new Image();
+        image.onload = function() {
+          resolve(image);
+        };
+        image.src = textCanvas.toDataURL({multiplier:memeVideo.videoWidth/memeVideo.offsetWidth});
+      })
+      
+      let fps = 25;
+      let progressCallback = function(data) {
+        loadingProgressText.innerHTML = `${(100*data.currentTime/data.duration).toFixed(0)}%`;
+      };
+      let videoBlobUrl = await createLabelledVideo(videoUrl, {fps:25, overlayImage:textImageOverlay, progressCallback});
+      
+      
+      let video = document.createElement("video");
+      video.autoplay = true;
+      video.controls = true;
+      video.loop = true;
+      video.src = videoBlobUrl;
+      video.style.maxWidth = "90vw";
+      video.style.maxHeight = "80vh";
+      video.style.border = "white solid 5px";
+      videoDownloadLink.href = videoBlobUrl;
+      
+      videoOutputWrapper.innerHTML = "";
+      videoOutputWrapper.appendChild(video);
+      loadingProgressArea.style.display = "none";
+      videoOutputArea.style.display = "block";
+    }
+    
+    function hasAudio(video) {
+      return video.mozHasAudio ||
+      Boolean(video.webkitAudioDecodedByteCount) ||
+      Boolean(video.audioTracks && video.audioTracks.length);
+    }
+    
+    let browserSupportsMediaRecorderMethod = window.MediaRecorder && document.createElement('canvas').captureStream;
+
+    
+    let alreadyWarnedAboutWebP = false;
+    async function createLabelledVideo(videoUrl, opts={}) {
+      return new Promise(async (resolve) => {
+        
+        let videoBlob = await fetch(videoUrl).then(r => r.blob()); // <-- fully download it first (no buffering)
+        let videoObjectUrl = URL.createObjectURL(videoBlob);
+        let video = document.createElement("video");
+        
+        // Not sure why hasAudio is returning false. Going to run hasAudio(memeVideo) (i.e. on the under-canvas embedded video) to solve this. Probably has something to do with audio not being muted? But the embedded video is muted too? Not sure what's going on.
+        // video.addEventListener('loadeddata', async function() {
+        //   console.log('loadeddata', hasAudio(video));
+        // });
+        // video.addEventListener('loadedmetadata', async function() {
+        //   console.log('loadedmetadata', hasAudio(video));
+        // });
+        
+        let seekResolve;
+        video.addEventListener('seeked', async function() {
+          if(seekResolve) seekResolve();
+        });
+        let canplaythrough_fired = false;
+        video.addEventListener('canplaythrough', async function() {
+          if(canplaythrough_fired) return; // otherwise it fires every time we set currentTime (and didn't want to change to another event because this one seems best for getting "webkitAudioDecodedByteCount" reliably
+          canplaythrough_fired = true;
+          
+          let canvas = document.createElement('canvas');
+          let context = canvas.getContext('2d');
+          
+          let [videoWidth, videoHeight] = [video.videoWidth, video.videoHeight];
+          
+          let topPadding = Math.round(videoPaddingTopInput.value * videoHeight);
+          let bottomPadding = Math.round(videoPaddingBottomInput.value * videoHeight);
+          
+          canvas.width = videoWidth;
+          canvas.height = videoHeight + topPadding + bottomPadding;
+          
+          // workaround chromium metadata bug:
+          while(video.duration === Infinity) {
+            await new Promise(r => setTimeout(r, 1000));
+            video.currentTime = 10000000*Math.random();
+          }
+          let duration = video.duration;
+          
+          // worlk around problem where the video doesn't appear to have audio:
+          video.volume = 0.2;
+          video.play();
+          await new Promise(r => setTimeout(r, 1000));
+          video.pause();
+          video.currentTime = 0;
+          await new Promise(r => seekResolve=r);
+          
+          
+          let method;
+          if(document.createElement('canvas').toDataURL('image/webp').startsWith('data:image/webp')) method = "whammy";
+          else if(browserSupportsMediaRecorderMethod) method = "mediarecorder";
+          else method = "libwebp";
+          
+          if(method === "whammy" && hasAudio(video) && browserSupportsMediaRecorderMethod) { 
+            method = "mediarecorder"; // sacrifice some video quality to add the audio - whammy doesn't support audio :(
+          }
+
+          if(!alreadyWarnedAboutWebP) {
+            if(method === "mediarecorder" && !hasAudio(video)) alert("Heads up! Your web browser doesn't support encoding of the new '.webp' image format, so the quality of the output video may be a bit worse than if you used a web brower like the latest version of Chrome.");
+            if(method === "libwebp") alert("Heads up! Your web browser doesn't support some important video processing features yet, so the rendering process will be about 50x slower(!) compared to a browser like Firefox or Chrome - please consider switching to one of these browsers for much faster processing. Your web browser may get a bit laggy (freezing up a bit) during the rendering process.");
+            alreadyWarnedAboutWebP = true;
+          }
+          
+          console.log("Using method:", method);
+          
+          
+          if(method === "whammy" || method === "libwebp") {
+            let frames = [];
+            let interval = 1 / opts.fps;
+            let currentTime = 0;
+            
+            let i = 0;
+            let backupWebpEncoder = null;
+
+            while(currentTime < duration) {
+              video.currentTime = currentTime;
+              await new Promise(r => seekResolve=r);
+
+              context.fillStyle = "#ffffff";
+              context.fillRect(0, 0, canvas.width, canvas.height);
+              context.drawImage(video, 0, topPadding, videoWidth, videoHeight);
+              if(opts.overlayImage) context.drawImage(opts.overlayImage, 0, 0, canvas.width, canvas.height);
+              let base64ImageData = canvas.toDataURL("image/webp");
+
+              if(method === "whammy") {
+                 frames.push(base64ImageData);
+              } else if(method === "libwebp") {
+
+                if(!window.WebPEncoder) await new Promise((resolve, reject) => {let js = document.createElement("script"); js.src="/library/libwebp-0.1.3.min.js"; js.onload=resolve; js.onerror=reject; document.body.appendChild(js)});
+                let out = {output:''};
+                let input = context.getImageData(0, 0, canvas.width, canvas.height);
+                let inputData = input.data;
+
+                if(!backupWebpEncoder) {
+                  backupWebpEncoder = new WebPEncoder();
+                  let config = {};
+                  config.method = 4;           // quality/speed trade-off (0=fast, 6=slower-better)
+                  config.sns_strength = 50;    // Spatial Noise Shaping. 0=off, 100=maximum.
+                  config.filter_strength = 20; // range: [0 = off .. 100 = strongest]
+                  config.filter_sharpness = 0; // range: [0 = off .. 7 = least sharp]
+                  config.filter_type = 0;			 // filtering type: 0 = simple, 1 = strong (only used if filter_strength > 0 or autofilter > 0)
+                  config.partitions = 0;			 // log2(number of token partitions) in [0..3] Default is set to 0 for easier progressive decoding.
+                  config.segments = 4;				 // maximum number of segments to use, in [1..4]
+                  config.pass = 1;						 // number of entropy-analysis passes (in [1..10]).
+                  config.show_compressed = 0;	 // if true, export the compressed picture back. In-loop filtering is not applied.
+                  config.preprocessing = 0;		 // preprocessing filter (0=none, 1=segment-smooth)
+                  config.autofilter = 0;			 // Auto adjust filter's strength [0 = off, 1 = on]
+                  config.partition_limit = 0;
+                  config.extra_info_type = 2;	 // print extra_info
+                  config.preset = 0; 	
+                  backupWebpEncoder.WebPEncodeConfig(config);
+                }
+                backupWebpEncoder.WebPEncodeRGBA(inputData, input.width, input.height, input.width*4, 92, out);
+                base64ImageData = "data:image/webp;base64," + btoa(out.output);
+                frames.push(base64ImageData);
+              }
+
+              currentTime += interval;
+              if(i%5 === 0 && opts.progressCallback) opts.progressCallback({duration, currentTime});
+              i++;
+            }
+
+            let webmEncoder = new Whammy.Video(opts.fps); 
+            frames.forEach(f => webmEncoder.add(f));
+            let blob = await new Promise(resolve => webmEncoder.compile(false, resolve));
+            let videoBlobUrl = URL.createObjectURL(blob);
+            resolve(videoBlobUrl);
+            
+          } else if(method === "mediarecorder") {
+            
+            let progressInterval;
+            let canvasStream = canvas.captureStream(opts.fps);
+            
+            if(hasAudio(video)) {
+              let ctx = new AudioContext();
+              let dest = ctx.createMediaStreamDestination();
+              let sourceNode = ctx.createMediaElementSource(video);
+              sourceNode.connect(dest);
+              canvasStream.addTrack(dest.stream.getAudioTracks()[0]);
+              sourceNode.connect(ctx.destination);
+            }
+            
+            let recorder = new MediaRecorder(canvasStream);
+            let chunks = [];
+            let stopRendering = false;
+            video.onplay = () => {
+              function step() {
+                context.fillStyle = "#ffffff";
+                context.fillRect(0, 0, canvas.width, canvas.height);
+                context.drawImage(video, 0, topPadding, videoWidth, videoHeight);
+                if(opts.overlayImage) context.drawImage(opts.overlayImage, 0, 0, canvas.width, canvas.height);
+                //if(!stopRendering) setTimeout(step, 1);
+                if(!stopRendering) requestAnimationFrame(step);
+              }
+              step();
+            };
+            video.onended = function() {
+              recorder.stop();
+              stopRendering = true;
+            };
+            video.play();
+            recorder.ondataavailable = e => chunks.push(e.data);
+            recorder.onstop = function() {
+              let blob = new Blob(chunks);
+              let videoBlobUrl = URL.createObjectURL(blob);
+              clearInterval(progressInterval);
+              resolve(videoBlobUrl);
+            };
+            recorder.start();
+            
+            if(opts.progressCallback) {
+              progressInterval = setInterval(() => opts.progressCallback({duration:video.duration, currentTime:video.currentTime}), 1000);
+            }
+            
+          }
+          
+          
+        });
+        
+        // set video src *after* listening to events in case it loads so fast
+        // that the events occur before we were listening.
+        video.src = videoObjectUrl; 
+        
+      });
+    }
+  </script>
+  
+ 
+  <div id="loadingScreen" style="display:none; position:fixed; top:0; bottom:0; left:0; right:0; background:#000000e0; z-index:5; overflow:auto;">
+    <div style="width:100%; height:100%; display:flex;">
+      
+      <div id="loadingProgressArea" style="text-align: center; margin:auto;">
+        <div style=" color: white; max-width: 17rem; margin-bottom: 1rem; text-align: center; font-size: 1.2rem;"><b>Your video is being rendered!</b> This could take quite a while, depending on how powerful your computer is.</div>
+        <div style="filter: brightness(0) invert(1)" class="lds-ring"><div></div><div></div><div></div><div></div></div>
+        <div id="loadingProgressText" style="font-size: 1.7rem; margin-top:1rem; color:white;">0%</div>
+      </div>
+        
+      <div id="videoOutputArea" style="display:none; text-align: center; margin:auto;">
+        <div style="color:white; margin: 1rem auto; font-size:1.2rem; max-width:90vw; text-align:center; width: 43rem;"><b>Finished!</b> Here's your rendered video. There should be a download button on the video somewhere. It may be hidden in a menu (depending on your browser), so look for a little menu icon near the video player's controls (also try right-clicking/long-pressing on the video). If you can't find it, <a id="videoDownloadLink" download="memed-io-output.webm" href="create-meme-video#" style="color:white; font-weight:bold; color:#00c8dd;">click here</a> and it should download, so long as you're using a modern web browser. If the video saves as a <b>.txt</b> file, you'll need to rename it so it ends in <b>.webm</b>.</div>
+        <div id="videoOutputWrapper"></div>
+        <button onclick="videoOutputWrapper.innerHTML=''; loadingScreen.style.display = 'none';" style="display: block; margin: 0 auto; margin-top: 1rem; padding: 0.5rem 0.7rem; cursor:pointer;">Start Over</button>
+        <br>
+      </div>
+      
+    </div>
+  </div>
+  
+  <div id="templateSavingScreen" style="display:none; position:fixed; top:0; bottom:0; left:0; right:0; background:#000000e0; z-index:9; overflow:auto;">
+    <div style="width:100%; height:100%; display:flex; z-index:11">
+      
+      <div onclick="templateSavingScreen.style.display='none'; clearInterval(thumbnailInterval);" style="position:fixed; top:0; bottom:0; left:0; right:0;"></div>
+      
+      <div id="savingTemplateSpinner" style="text-align: center; margin:auto; z-index:15;">
+        <div style="filter: brightness(0) invert(1)" class="lds-ring"><div></div><div></div><div></div><div></div></div>
+      </div>
+        
+      <div id="templateModal" style="display:none; margin:auto; width:95vw; max-width:600px; background:white; border-radius:2px; flex-direction:column; padding: 1rem; z-index:15;">
+        <div>
+          <h2 id="saveModalTitleEl" style="text-align: center; margin-top: 0;"></h2>
+          <p id="saveModalSubtitleEl"></p>
+        </div>
+        <div class="inputSection" style="margin-top:0">
+          <div class="label">Title:</div>
+          <input id="newTemplateTitle" style="width:100%; height: 1.8rem;" placeholder="My Meme Template">
+        </div>
+        <div class="inputSection">
+          <div class="label">URL:</div>
+          <div style="display:flex;"><div style="width:max-content; line-height: 1.8rem;">memed.io/template/</div><input id="newTemplateUrlName" oninput="handleNewTemplateNameInputEvent(this)" placeholder="my-meme-template" style="width: 9rem;"> <button id="visitTemplateButton" onclick="window.open('/template/'+this.previousElementSibling.value)" style="margin-left: 0.2rem;">visit ↗</button></div>
+        </div>
+        <div class="inputSection">
+          <div class="label">Description:</div>
+          <textarea id="newTemplateDescription" style="width:100%; height:5rem;" placeholder="(required) Let people know what this template is about. This text will appear on your template's web page. A good description will allow your template to be listed in search engines like Google."></textarea>
+        </div>
+        <div class="inputSection">
+          <div class="label">Password:</div>
+          <input id="newTemplatePassword" style="width:100%; height: 1.8rem;">
+        </div>
+        <div class="inputSection">
+          <div class="label">Thumbnail:</div>
+          <img id="newTemplateThumbnail" style="height:8rem; border: 4px dashed #e1e1e1; border-radius: 4px;">
+        </div>
+        <div class="inputSection" style="text-align:center;">
+          <button onclick="saveTemplate();" style="padding:0.3rem 0.5rem;">Save</button>
+        </div>
+        <div id="templateModalSuccess" class="inputSection" style="text-align:center;">
+          <div style="color:green;"><b>Success!</b> Your template has been saved. Make sure you keep your password somewhere where you won't lose it - if you do lose it, you won't be able to edit this template in the future.</div>
+        </div>
+      </div>
+      <style>
+        #templateModal .inputSection {
+          margin-top: 1rem;
+          
+        }
+        #templateModal .inputSection .label {
+          text-transform:uppercase;
+          font-size:85%;
+          opacity:0.8;
+        }
+        #templateModal input, #templateModal textarea {
+          border:1px solid #bbb;
+          font-size: 1rem;
+        }
+        #templateModal input {
+          font-size: 1rem;
+        }
+      </style>
+      
+    </div>
+  </div>
+  
+</div>
+
+<script>
+  let compiledFabricString;
+  let imgurUploadMap = new Map(); // <-- in case they've already uploaded it and are just updating the template in the same session
+  let thumbnailInterval;
+  async function beginTemplateCreation(mode="create") {
+    templateSavingScreen.style.display = "flex";
+    savingTemplateSpinner.style.display = "flex";
+    templateModal.style.display = "none";
+    templateModalSuccess.style.display = "none";
+    visitTemplateButton.style.display = "none";
+    
+    if(window.originalVideoUrl.startsWith("blob:")) {
+      alert("Unfortunately we don't currently support creating templates with videos that are from your computer. You'll need to upload the video somewhere and then paste the URL on this page and create the template again. You can upload videos for free (no signup) at imgur.com/upload or you can use YouTube (Vimeo and others are not supported). Sorry about that!");
+      templateSavingScreen.style.display = "none";
+      return;
+    }
+    
+    let data = JSON.parse(JSON.stringify(textCanvas));
+    for(let obj of data.objects) {
+      if(obj.type === "image") {
+        if(obj.src.startsWith("blob:") || obj.src.startsWith("data:")) {
+          if(imgurUploadMap.has(obj.src)) {
+             obj.src = imgurUploadMap.get(obj.src);
+          }
+          let base64, type;
+          if(obj.src.startsWith("blob:")) {
+            let blob = await fetch(obj.src).then(r => r.blob());
+            base64 = await blobToBase64Url(blob);
+            base64 = base64.slice(base64.indexOf(",")+1);
+            type = blob.type.split("/")[1];
+          } else { // it was already in base 64:
+            type = obj.src.split(";")[0].split("/")[1];
+            base64 = obj.src.slice(obj.src.indexOf(",")+1);
+          }
+          
+          let response = await fetch("/api/uploadImage", {
+            method:"POST",
+            headers: {
+              'Accept': 'application/json, text/plain, */*',
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              image: base64,
+              type: type,
+              name: "image."+type,
+            }),
+          }).then(r => r.json());
+          
+          if(!response.success) {
+            alert("An error occurred when we were trying to upload your images. This could be a temporary error with the server, or it may be that your images are too big (>10mb). Sorry about that!");
+            templateSavingScreen.style.display = "none";
+            return;
+          }
+          imgurUploadMap.set(obj.src, response.data.link);
+          obj.src = response.data.link;
+          
+        }
+      }
+    }
+    compiledFabricString = JSON.stringify(data);
+    
+    // Prefill the data if they're updating it (i.e. they have the password in localStorage)
+    let passwords = JSON.parse(localStorage.templatePasswords || "{}");
+    let thisPassword = passwords[window.location.pathname.split("/")[2]];
+    if(mode === "update" || (window.location.pathname.split("/")[1] === "template" && thisPassword)) {
+      newTemplateTitle.value = window.templateData.title;
+      newTemplateDescription.value = window.templateData.description;
+      newTemplateUrlName.value = window.location.pathname.split("/")[2];
+    }
+    if(thisPassword) {
+      newTemplatePassword.value = thisPassword;
+      saveModalTitleEl.innerHTML = "Update Your Template";
+      saveModalSubtitleEl.innerHTML = "Simply make your edits, click save, and your template will be updated. Please not that if you change your template's URL, a <b>new</b> template will be created, leaving the old one as-is.";
+      newTemplateTitle.oninput = function() {};
+    } else {
+      newTemplatePassword.value = randomAlphaNumericString(30);
+      saveModalTitleEl.innerHTML = "Create a Template";
+      saveModalSubtitleEl.innerHTML = "Neat! You've decided to create a template using the video. Once you've filled in the details and clicked save you'll be able to share your template with others using a unique link/URL.";
+      newTemplateTitle.oninput = function() { 
+        newTemplateUrlName.value = this.value;
+        newTemplateUrlName.dispatchEvent( new Event('input', { 'bubbles': true, 'cancelable': true }) );
+        this.focus();
+      };
+    }
+    
+    savingTemplateSpinner.style.display = "none";
+    templateModal.style.display = "flex";
+    
+    // Thumbnail stuff:
+    let img = document.createElement("img");
+    let multiplier = 500/textCanvas.getWidth();
+    img.src = textCanvas.toDataURL({multiplier, format:"png"});
+    await new Promise(r => img.naturalWidth ? r() : img.onload=r);
+    let canvas = document.createElement("canvas");
+    canvas.width = img.naturalWidth;
+    canvas.height = img.naturalHeight;
+    let ctx = canvas.getContext("2d");
+    let topPadding = multiplier*Math.round(videoPaddingTopInput.value * memeVideo.offsetHeight);
+    
+    clearInterval(thumbnailInterval);
+    thumbnailInterval = setInterval(updateThumb, 1000);
+    updateThumb();
+    function updateThumb() {
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(memeVideo, 0, topPadding, canvas.width, multiplier*memeVideo.offsetHeight);
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      newTemplateThumbnail.src = canvas.toDataURL("image/jpeg", 0.7);
+    }
+    
+  }
+  async function saveTemplate() {
+    clearInterval(thumbnailInterval);
+    
+    savingTemplateSpinner.style.display = "flex";
+    templateModal.style.display = "none";
+    
+    function backToEditScreen() {
+      savingTemplateSpinner.style.display = "none";
+      templateModal.style.display = "flex";
+    }
+    
+    let data = {};
+    data.videoUrl = window.originalVideoUrl;
+    data.title = newTemplateTitle.value;
+    data.description = newTemplateDescription.value;
+    data.fabricDataString = compiledFabricString;
+    data.topPadding = Number(videoPaddingTopInput.value);
+    data.bottomPadding = Number(videoPaddingBottomInput.value);
+    data.thumbnailUrl = newTemplateThumbnail.src;
+    data.originalWidth = textCanvas.width;  // we save original width and height because fabricjs saves absolute coords, and we need the canvas to be responsive
+    data.originalHeight = textCanvas.height;
+    let password = newTemplatePassword.value;
+    let urlName = newTemplateUrlName.value;
+    
+    if(newTemplateTitle.value < 5) { backToEditScreen(); return alert("That title is really short! Plz make it at least 5 characters. Thanks!"); }
+    if(urlName.length < 5) { backToEditScreen(); return alert("That url is really short! Plz make it at least 5 characters. Thanks!"); }
+    if(password.length < 5) { backToEditScreen(); return alert("That password is really short! Plz make it a bit longer so your template doesn't get hacked."); }
+    if(newTemplateDescription.value.length < 10) { backToEditScreen(); return alert("That description is really short! Plz make it a bit longer so people know what this template is about."); }
+    
+    let r = await fetch("/api/saveTemplateData", {
+      method:"POST",
+      headers: {
+        'Accept': 'application/json, text/plain, */*',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({password, urlName, data})
+    }).then(r => r.json()).catch(e => ({success:false, message:"An unknown error has occurred. Sorry about this! Try again in a few minutes?"}));
+    
+    if(!r.success) {
+      savingTemplateSpinner.style.display = "none";
+      templateModal.style.display = "flex";
+      alert(r.message);
+      return;
+    }
+    savingTemplateSpinner.style.display = "none";
+    templateModal.style.display = "flex";
+    templateModalSuccess.style.display = "flex";
+    visitTemplateButton.style.display = "flex";
+    let passwords = JSON.parse(localStorage.templatePasswords || "{}");
+    passwords[urlName] = password;
+    localStorage.templatePasswords = JSON.stringify(passwords);
+    window.templateData = data;
+    window.history.replaceState({}, "", "/template/"+urlName);
+  }
+    
+  function randomAlphaNumericString(len) {
+    let str = "";
+    while(str.length < len) str += Math.random().toString(36).substr(2);
+    str = str.substr(0, len); 
+    return str;
+  } 
+  function handleNewTemplateNameInputEvent(input) {
+    let caretPos = input.selectionStart;
+    let text = input.value;
+    if(text === "") { return; }
+    let output = "";
+    for(let c of text) {
+      if(/[A-Z]/.test(c)) {
+        output += c.toLowerCase();
+      } else if(/[ \-]/.test(c)) {
+        output += "-";
+      } else if(/[0-9a-z]/.test(c)) {
+        output += c;
+      } else {
+        output += "-";
+      }
+    }
+    input.value = output;
+    setCaretPosition(input, caretPos);
+  };
+  function setCaretPosition(elem, caretPos) {
+    let range;
+    if (elem.createTextRange) {
+      range = elem.createTextRange();
+      range.move('character', caretPos);
+      range.select();
+    } else {
+      elem.focus();
+      if(elem.selectionStart !== undefined) {
+        elem.setSelectionRange(caretPos, caretPos);
+      }
+    }
+  }
+  function blobToBase64Url(blob) {
+    return new Promise(resolve => {
+      let reader = new FileReader();
+      reader.readAsDataURL(blob); 
+      reader.onloadend = function() {
+        resolve(reader.result);
+      }
+    });
+  }
+</script>
+
+
+<script async src="library/fontfaceobserver.standalone.2.0.13.js"></script>
+<script async src="library/whammy-15-dec-2015.js"></script>
+<script>
+  window.addEventListener("load", function() {
+    let link = document.createElement('link');
+    link.setAttribute('rel', 'stylesheet');
+    link.setAttribute('href', 'https://fonts.googleapis.com/css?family=Anton|Dancing+Script|Indie+Flower|Lobster|Pacifico|Shadows+Into+Light|Acme|Allura|Amatic+SC|Bangers|Bree+Serif|Cabin+Sketch|Chewy|Cinzel|Copse|Cormorant+Garamond|Courgette|Do+Hyeon|Domine|Fredericka+the+Great|Gloria+Hallelujah|Great+Vibes|Homemade+Apple|Kaushan+Script|Kavoon|Love+Ya+Like+A+Sister|Luckiest+Guy|Marcellus+SC|Merienda|Monda|Monoton|Permanent+Marker|Press+Start+2P|Righteous|Rock+Salt|Russo+One|Sacramento');
+    document.head.appendChild(link);
+  });
+</script>
+</main>
+    
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-123166130-8"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-123166130-8');
+    </script>
+
+  </body>
+</html>
